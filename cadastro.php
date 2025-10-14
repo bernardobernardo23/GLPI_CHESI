@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $mensagem = "Cadastro realizado com sucesso! Você já pode fazer login.";
             // redireciona para o login após 3 segundos
-            header("Refresh: 3; url=login.php"); 
+            header("Refresh: 3; url=index.php"); 
             
         } catch (PDOException $e) {
             // verifica se é um erro de duplicidade de e-mail
@@ -67,6 +67,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <button type="submit">Cadastrar</button>
     </form>
-    <p>Já tem uma conta? <a href="login.php">Faça login aqui</a>.</p>
+    <p>Já tem uma conta? <a href="index.php">Faça login aqui</a>.</p>
 </body>
 </html>

@@ -1,8 +1,5 @@
 <?php
-// ===============================================
-// login.php
-// Lógica e Formulário de Autenticação
-// ===============================================
+
 session_start();
 require_once 'db_connection.php';
 
@@ -23,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             // buscar o hash armazenado pelo email
-            $sql = "SELECT id, nome, senha FROM usuarios WHERE email = ?";
+            $sql = "SELECT id, nome, senha,setor FROM usuarios WHERE email = ?";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$email]); //se relaciona com a ? do sql
             $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -34,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // senha válida: Inicia a sessão
                 $_SESSION['usuario_id'] = $usuario['id'];
                 $_SESSION['usuario_nome'] = $usuario['nome'];
+                $_SESSION['usuario_setor'] = $usuario['setor'];
                 
                 // redireciona
                 header('Location: painel.php');
@@ -61,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p style="color: red; font-weight: bold;"><?php echo $mensagem; ?></p>
     <?php endif; ?>
 
-    <form method="POST" action="login.php">
+    <form method="POST" action="index.php">
         <label for="email">Email:</label><br>
         <input type="email" id="email" name="email" required><br><br>
 
