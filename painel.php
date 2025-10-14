@@ -35,7 +35,7 @@ $setor = $_SESSION['usuario_setor'] ?? 'Usuário';
         
         <h2 class="text-gray-400 text-xs uppercase mt-4">Chamados</h2>
         <a href="chamado/novo.php" class="block px-3 py-2 rounded hover:bg-gray-700">🎫 Novo Chamado</a>
-        <a href="chamado/listar.php" class="block px-3 py-2 rounded hover:bg-gray-700">📋 <?= ($setor=='TI') ? 'Todos os Chamados' : 'Meus Chamados' ?></a>
+        <a href="chamado/listarChamados.php" class="block px-3 py-2 rounded hover:bg-gray-700">📋 <?= ($setor=='TI') ? 'Todos os Chamados' : 'Meus Chamados' ?></a>
         
         <?php if ($setor == 'TI'): ?>
         <h2 class="text-gray-400 text-xs uppercase mt-4">Administração</h2>

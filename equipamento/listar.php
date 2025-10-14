@@ -18,8 +18,6 @@ $dados = $pdo->query("SELECT * FROM equipamentos ORDER BY descricao")->fetchAll(
 <tr>
   <th class="border p-2">Descrição</th>
   <th class="border p-2">Tipo</th>
-  <th class="border p-2">Patrimônio</th>
-  <th class="border p-2">Status</th>
 </tr>
 </thead>
 <tbody>
@@ -27,8 +25,6 @@ $dados = $pdo->query("SELECT * FROM equipamentos ORDER BY descricao")->fetchAll(
 <tr class="hover:bg-gray-50">
   <td class="border p-2"><?=htmlspecialchars($d['descricao'])?></td>
   <td class="border p-2"><?=$d['tipo']?></td>
-  <td class="border p-2"><?=$d['patrimonio']?></td>
-  <td class="border p-2"><?=$d['status']?></td>
 </tr>
 <?php endforeach; ?>
 </tbody>

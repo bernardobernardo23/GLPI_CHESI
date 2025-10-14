@@ -3,134 +3,166 @@ session_start();
 require_once '../db_connection.php';
 
 // --------------------
-// Dados do usuário
+// Verifica se o usuário está logado
 // --------------------
+if (!isset($_SESSION['usuario_id'])) {
+    die("Acesso negado. Faça login novamente.");
+}
+
 $usuario_id = $_SESSION['usuario_id'];
 
 // --------------------
-// Função para baixar estoque e registrar movimentação
+// Função: baixa de estoque e registro de movimentação
 // --------------------
-function baixarEstoque($pdo, $item_id, $quantidade, $usuario_id, $motivo){
-    // Verifica estoque disponível
+function baixarEstoque($pdo, $item_id, $quantidade, $usuario_id, $motivo) {
     $stmt = $pdo->prepare("SELECT quantidade FROM itens WHERE id = ?");
     $stmt->execute([$item_id]);
-    $estoque = (int)$stmt->fetchColumn();
+    $estoque = (int) $stmt->fetchColumn();
 
-    if($estoque < $quantidade){
+    if ($estoque < $quantidade) {
         die("Erro: quantidade solicitada ($quantidade) maior que o estoque disponível ($estoque).");
     }
 
-    // Atualiza estoque
     $stmt = $pdo->prepare("UPDATE itens SET quantidade = quantidade - ? WHERE id = ?");
     $stmt->execute([$quantidade, $item_id]);
 
-    // Registra movimentação
     $stmt = $pdo->prepare("
-        INSERT INTO movimentacoes_estoque 
-        (item_id, tipo, quantidade, usuario_id, motivo) 
+        INSERT INTO movimentacoes_estoque (item_id, tipo, quantidade, usuario_id, motivo)
         VALUES (?, 'baixa', ?, ?, ?)
     ");
     $stmt->execute([$item_id, $quantidade, $usuario_id, $motivo]);
 }
 
 // --------------------
-// Dados do formulário
+// Upload da imagem (somente chamados gerais)
 // --------------------
-$tipo = $_POST['tipo'] ?? null;
 $imagem_path = null;
+$uploadsDir = "../uploads/";
 
-// Upload de imagem (somente para chamados gerais)
-if(isset($_FILES['imagem']) && $_FILES['imagem']['error'] === 0){
-    $ext = pathinfo($_FILES['imagem']['name'], PATHINFO_EXTENSION);
-    $nomeArquivo = uniqid().'.'.$ext;
-    move_uploaded_file($_FILES['imagem']['tmp_name'], "../uploads/".$nomeArquivo);
-    $imagem_path = "uploads/".$nomeArquivo;
+if (!is_dir($uploadsDir)) {
+    mkdir($uploadsDir, 0777, true);
 }
 
-// Inicializa título e descrição
+if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
+    $ext = strtolower(pathinfo($_FILES['imagem']['name'], PATHINFO_EXTENSION));
+    $nomeArquivo = uniqid("chamado_") . "." . $ext;
+    $destino = $uploadsDir . $nomeArquivo;
+
+    if (move_uploaded_file($_FILES['imagem']['tmp_name'], $destino)) {
+        $imagem_path = "uploads/" . $nomeArquivo; // Caminho relativo para BD
+    } else {
+        die("Erro ao mover arquivo de imagem.");
+    }
+}
+
+// --------------------
+// Tipo do chamado
+// --------------------
+$tipo = $_POST['tipo'] ?? null;
+if (!$tipo) {
+    die("Erro: tipo de chamado não informado.");
+}
+
 $titulo = '';
 $descricao = '';
 
 // --------------------
-// Lógica por tipo de chamado
+// CHAMADO DE TONER
 // --------------------
-if($tipo === 'toner'){
+if ($tipo === 'toner') {
     $equipamento_id = $_POST['equipamento_id'] ?? null;
     $item_id = $_POST['item_id'] ?? null;
-    $quantidade = (int)($_POST['quantidade'] ?? 1);
+    $quantidade = (int) ($_POST['quantidade'] ?? 1);
 
-    if(!$equipamento_id || !$item_id){
-        die("Erro: impressora ou toner não selecionado.");
+    if (!$equipamento_id) {
+        die("Erro: impressora não selecionada.");
     }
 
-    // Buscar nomes para gerar título e descrição
+    // Caso o toner não venha via formulário, busca o vinculado automaticamente
+    if (!$item_id) {
+        $stmt = $pdo->prepare("SELECT item_id FROM impressora_tonner WHERE equipamento_id = ?");
+        $stmt->execute([$equipamento_id]);
+        $item_id = $stmt->fetchColumn();
+
+        if (!$item_id) {
+            die("Erro: nenhum toner vinculado encontrado para esta impressora.");
+        }
+    }
+
+    // Busca nomes
     $stmt = $pdo->prepare("SELECT descricao FROM equipamentos WHERE id = ?");
     $stmt->execute([$equipamento_id]);
-    $equipamento_nome = $stmt->fetchColumn();
+    $equipamento_nome = $stmt->fetchColumn() ?: 'Desconhecido';
 
     $stmt = $pdo->prepare("SELECT nome FROM itens WHERE id = ?");
     $stmt->execute([$item_id]);
-    $item_nome = $stmt->fetchColumn();
+    $item_nome = $stmt->fetchColumn() ?: 'Toner não encontrado';
 
-    $titulo = "Toner solicitado: $item_nome";
-    $descricao = "Equipamento: $equipamento_nome\nItem: $item_nome\nQuantidade: $quantidade";
+    $titulo = "Solicitação de Toner: $item_nome";
+    $descricao = "Impressora: $equipamento_nome\nToner: $item_nome\nQuantidade: $quantidade";
 
-} elseif($tipo === 'material'){
+}
+// --------------------
+// CHAMADO DE MATERIAL
+// --------------------
+elseif ($tipo === 'material') {
     $item_id = $_POST['item_id'] ?? null;
-    $quantidade = (int)($_POST['quantidade'] ?? 1);
+    $quantidade = (int) ($_POST['quantidade'] ?? 1);
 
-    if(!$item_id){
+    if (!$item_id) {
         die("Erro: item de material não selecionado.");
     }
 
-    // Buscar nome do item
     $stmt = $pdo->prepare("SELECT nome FROM itens WHERE id = ?");
     $stmt->execute([$item_id]);
-    $item_nome = $stmt->fetchColumn();
+    $item_nome = $stmt->fetchColumn() ?: 'Desconhecido';
 
-    $titulo = "Material solicitado: $item_nome";
+    $titulo = "Solicitação de Material: $item_nome";
     $descricao = "Item: $item_nome\nQuantidade: $quantidade";
+}
+// --------------------
+// CHAMADO GERAL
+// --------------------
+elseif ($tipo === 'geral') {
+    $titulo = trim($_POST['titulo'] ?? '');
+    $descricao = trim($_POST['descricao'] ?? '');
 
-} elseif($tipo === 'geral'){
-    $titulo = $_POST['titulo'] ?? '';
-    $descricao = $_POST['descricao'] ?? '';
-} else {
+    if (!$titulo || !$descricao) {
+        die("Erro: título e descrição são obrigatórios para chamados gerais.");
+    }
+}
+else {
     die("Erro: tipo de chamado inválido.");
 }
 
 // --------------------
-// Inserir chamado
+// Insere o chamado
 // --------------------
 $stmt = $pdo->prepare("
-    INSERT INTO chamados 
-    (tipo, titulo, descricao, imagem_path, autor_id) 
+    INSERT INTO chamados (tipo, titulo, descricao, imagem_path, autor_id)
     VALUES (?, ?, ?, ?, ?)
 ");
 $stmt->execute([$tipo, $titulo, $descricao, $imagem_path, $usuario_id]);
 $chamado_id = $pdo->lastInsertId();
 
 // --------------------
-// Registrar toner ou baixar estoque
+// Baixas e registros extras
 // --------------------
-if($tipo === 'toner'){
-    // Registrar toner solicitado
+if ($tipo === 'toner') {
     $stmt = $pdo->prepare("
-        INSERT INTO toner_solicitacao 
-        (chamado_id, equipamento_id, item_id, quantidade) 
+        INSERT INTO toner_solicitacao (chamado_id, equipamento_id, item_id, quantidade)
         VALUES (?, ?, ?, ?)
     ");
     $stmt->execute([$chamado_id, $equipamento_id, $item_id, $quantidade]);
 
-    // Baixa no estoque
     baixarEstoque($pdo, $item_id, $quantidade, $usuario_id, "Solicitação de toner");
 
-} elseif($tipo === 'material'){
-    // Baixa no estoque
+} elseif ($tipo === 'material') {
     baixarEstoque($pdo, $item_id, $quantidade, $usuario_id, "Solicitação de material");
 }
 
 // --------------------
-// Redirecionar
+// Redireciona com sucesso
 // --------------------
 header("Location: index.php?success=1");
 exit;

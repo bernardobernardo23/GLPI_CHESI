@@ -4,10 +4,9 @@ require_once '../db_connection.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $descricao = $_POST['descricao'];
     $tipo = $_POST['tipo'];
-    $patrimonio = $_POST['patrimonio'] ?? null;
 
-    $stmt = $pdo->prepare("INSERT INTO equipamentos (descricao, tipo, patrimonio) VALUES (?, ?, ?)");
-    $stmt->execute([$descricao, $tipo, $patrimonio]);
+    $stmt = $pdo->prepare("INSERT INTO equipamentos (descricao, tipo) VALUES (?, ?)");
+    $stmt->execute([$descricao, $tipo]);
     header('Location: listar.php?msg=Equipamento cadastrado');
     exit;
 }
@@ -25,7 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <form method="post" class="space-y-3">
   <input name="descricao" placeholder="Descrição do equipamento" class="border p-2 rounded w-full" required>
   <input name="tipo" placeholder="Tipo (Impressora, PC...)" class="border p-2 rounded w-full" required>
-  <input name="patrimonio" placeholder="Nº Patrimônio (opcional)" class="border p-2 rounded w-full">
   <button class="bg-blue-600 text-white px-4 py-2 rounded">Salvar</button>
 </form>
 </div>
