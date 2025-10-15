@@ -33,26 +33,17 @@ $toners = $pdo->query("SELECT id, nome FROM itens WHERE tipo = 'toner' ORDER BY 
 
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-<meta charset="UTF-8">
-<title>Vincular Toner a Impressora</title>
-<script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
-<div class="flex">
-    <!-- Sidebar -->
-    <div class="w-64 h-screen bg-gray-900 text-white p-5">
-        <h2 class="text-xl font-bold mb-6">Painel GLPI</h2>
-        <ul>
-            <li class="mb-3"><a href="../dashboard.php" class="hover:underline">🏠 Dashboard</a></li>
-            <li class="mb-3"><a href="../tonner/listarToners.php" class="hover:underline">📄 Listar Toners</a></li>
-            <li class="mb-3"><a href="vincularToner.php" class="text-yellow-400 font-bold">🔗 Vincular Toner</a></li>
-        </ul>
-    </div>
 
-    <!-- Conteúdo -->
-    <div class="flex-1 p-10">
-        <h1 class="text-2xl font-bold mb-6">🔗 Vincular Toner a Impressora</h1>
+<head>
+    <meta charset="UTF-8">
+    <title>Vincular Toner a Impressora</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex">
+    <?php include '../areaLateral.php'; ?>
+    <main class="flex-1 ml-64 p-10 flex flex-col items-center">
+        <h1 class="text-2xl font-bold mb-6">Vincular Toner a Impressora</h1>
 
         <?php if ($mensagem): ?>
             <div class="mb-4 p-3 rounded <?= strpos($mensagem, '✅') !== false ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' ?>">
@@ -90,7 +81,7 @@ $toners = $pdo->query("SELECT id, nome FROM itens WHERE tipo = 'toner' ORDER BY 
                 Vincular
             </button>
         </form>
-    </div>
-</div>
+    </main>
 </body>
+
 </html>

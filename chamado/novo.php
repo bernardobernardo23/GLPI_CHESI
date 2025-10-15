@@ -24,14 +24,12 @@ $itens = $pdo->query("SELECT * FROM itens ORDER BY nome")->fetchAll();
 
 <?php include '../areaLateral.php'; ?>
 
-<!-- CONTEÚDO PRINCIPAL -->
 <main class="flex-1 ml-64 p-8">
     <div class="max-w-3xl mx-auto bg-white p-6 rounded shadow">
         <h1 class="text-2xl font-bold mb-6">Abrir Novo Chamado</h1>
 
         <form id="formChamado" action="handler.php" method="post" enctype="multipart/form-data" class="space-y-4">
 
-            <!-- Tipo de Solicitação -->
             <div>
                 <label class="block font-medium">Tipo de solicitação</label>
                 <select id="tipoSelect" name="tipo" class="border p-2 rounded w-full" required>
@@ -42,7 +40,6 @@ $itens = $pdo->query("SELECT * FROM itens ORDER BY nome")->fetchAll();
                 </select>
             </div>
 
-            <!-- Solicitação de Toner -->
             <div id="tonerFields" class="hidden">
                 <label class="block mt-3">Impressora</label>
                 <select id="impressoraSelect" name="equipamento_id" class="border p-2 rounded w-full">
@@ -60,7 +57,6 @@ $itens = $pdo->query("SELECT * FROM itens ORDER BY nome")->fetchAll();
                 <input name="quantidade" type="number" min="1" value="1" class="border p-2 rounded w-32 mt-1" placeholder="Qtd">
             </div>
 
-            <!-- Solicitação de Material -->
             <div id="materialFields" class="hidden">
                 <label class="block mt-3">Item de Material</label>
                 <select name="item_id" class="border p-2 rounded w-full">
@@ -74,7 +70,6 @@ $itens = $pdo->query("SELECT * FROM itens ORDER BY nome")->fetchAll();
                 <input name="quantidade" type="number" min="1" value="1" class="border p-2 rounded w-32 mt-1" placeholder="Qtd">
             </div>
 
-            <!-- Solicitação Geral -->
             <div id="geralFields" class="hidden">
                 <input name="titulo" placeholder="Assunto" class="border p-2 rounded w-full">
                 <textarea name="descricao" placeholder="Descrição" class="border p-2 rounded w-full mt-2" rows="4"></textarea>
@@ -83,7 +78,6 @@ $itens = $pdo->query("SELECT * FROM itens ORDER BY nome")->fetchAll();
                 <input type="file" name="imagem" accept="image/*" class="border p-2 rounded w-full">
             </div>
 
-            <!-- Botão Enviar -->
             <button class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition">Enviar</button>
         </form>
     </div>

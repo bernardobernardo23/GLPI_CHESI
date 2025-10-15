@@ -17,6 +17,7 @@ $dados = $pdo->query("SELECT * FROM equipamentos ORDER BY descricao")->fetchAll(
     <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow">
       <h1 class="text-2xl font-semibold mb-4">Equipamentos</h1>
       <a href="cadastrar.php" class="bg-blue-600 text-white px-3 py-1 rounded">Novo</a>
+      <a href="../tonner/vincularToner.php" class="bg-green-600 text-white px-3 py-1 rounded">Vincular Tonner</a>
       <table class="w-full border mt-3">
         <thead class="bg-gray-200">
           <tr>
