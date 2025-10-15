@@ -7,10 +7,10 @@ $usuario_id = $_SESSION['usuario_id'];
 $usuario_setor = $_SESSION['usuario_setor'] ?? '';
 
 // Determina se é admin pelo setor
-$usuario_admin = ($usuario_setor === 'TI') ? true : false;
+$usuario_admin = ($usuario_setor === 'TI');
 
-if($usuario_admin){
-    // Admin vê todos os chamados
+// Busca os chamados
+if ($usuario_admin) {
     $stmt = $pdo->query("
         SELECT c.*, u.nome AS autor_nome, u.setor AS autor_setor
         FROM chamados c
@@ -18,7 +18,6 @@ if($usuario_admin){
         ORDER BY c.dt_abertura DESC
     ");
 } else {
-    // Usuário vê apenas seus chamados
     $stmt = $pdo->prepare("
         SELECT c.*, u.nome AS autor_nome, u.setor AS autor_setor
         FROM chamados c
@@ -34,16 +33,17 @@ $chamados = $stmt->fetchAll();
 
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
   <meta charset="UTF-8">
   <script src="https://cdn.tailwindcss.com"></script>
-  <title>Chamados</title>
+  <title>Lista de Chamados</title>
 </head>
+<body class="bg-gray-100 min-h-screen flex">
 
-<body class="bg-gray-100 p-8">
+<?php include '../areaLateral.php'; ?>
 
-  <div class="max-w-5xl mx-auto bg-white p-6 rounded shadow">
+<main class="flex-1 ml-64 p-8">
+  <div class="max-w-6xl mx-auto bg-white p-6 rounded shadow">
     <h1 class="text-2xl font-bold mb-6">Lista de Chamados</h1>
 
     <table class="w-full border border-gray-300">
@@ -60,16 +60,16 @@ $chamados = $stmt->fetchAll();
       </thead>
       <tbody>
         <?php foreach ($chamados as $c): ?>
-          <tr>
-            <td class="border p-2"><?= $c['id'] ?></td>
+          <tr class="hover:bg-gray-50">
+            <td class="border p-2 text-center"><?= $c['id'] ?></td>
             <td class="border p-2"><?= ucfirst($c['tipo']) ?></td>
             <td class="border p-2"><?= htmlspecialchars($c['titulo']) ?></td>
             <td class="border p-2"><?= $c['status'] ?></td>
             <td class="border p-2"><?= htmlspecialchars($c['autor_nome']) ?> (<?= htmlspecialchars($c['autor_setor']) ?>)</td>
             <td class="border p-2"><?= $c['dt_abertura'] ?></td>
-            <td class="border p-2">
+            <td class="border p-2 text-center">
               <?php if ($usuario_admin): ?>
-                <a href="detalhesChamado.php?id=<?= $c['id'] ?>" class="text-blue-600">Ver detalhes</a>
+                <a href="detalhesChamado.php?id=<?= $c['id'] ?>" class="text-blue-600 hover:underline">Ver detalhes</a>
               <?php else: ?>
                 <span class="text-gray-500">Visualizar</span>
               <?php endif; ?>
@@ -79,7 +79,7 @@ $chamados = $stmt->fetchAll();
       </tbody>
     </table>
   </div>
+</main>
 
 </body>
-
 </html>
