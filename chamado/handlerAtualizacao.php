@@ -12,16 +12,16 @@ if($usuario_setor !== 'TI'){
 // Dados do formulário
 $chamado_id = $_POST['chamado_id'] ?? null;
 $descricao = $_POST['descricao'] ?? '';
-$imagem_path = null;
 
 if(!$chamado_id || !$descricao){
     die("Campos obrigatórios faltando");
 }
 
+$imagem_path = null;
 // Upload da imagem (opcional)
 if(isset($_FILES['imagem']) && $_FILES['imagem']['error'] === 0){
     // Certifica-se que a pasta uploads existe
-    $uploadDir = __DIR__ . '/../uploads/';
+    $uploadDir = __DIR__ . '../uploads/';
     if(!is_dir($uploadDir)){
         mkdir($uploadDir, 0755, true);
     }
@@ -31,7 +31,7 @@ if(isset($_FILES['imagem']) && $_FILES['imagem']['error'] === 0){
     $destino = $uploadDir . $nomeArquivo;
 
     if(move_uploaded_file($_FILES['imagem']['tmp_name'], $destino)){
-        $imagem_path = '../uploads/' . $nomeArquivo; // Caminho relativo para exibir no HTML
+        $imagem_path = 'uploads/' . $nomeArquivo; // Caminho relativo para exibir no HTML
     } else {
         die("Erro ao salvar a imagem");
     }

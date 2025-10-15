@@ -15,6 +15,7 @@ $usuario_id = $_SESSION['usuario_id'];
 // Função: baixa de estoque e registro de movimentação
 // --------------------
 function baixarEstoque($pdo, $item_id, $quantidade, $usuario_id, $motivo) {
+    // Verifica se há quantidade suficiente
     $stmt = $pdo->prepare("SELECT quantidade FROM itens WHERE id = ?");
     $stmt->execute([$item_id]);
     $estoque = (int) $stmt->fetchColumn();
@@ -23,9 +24,11 @@ function baixarEstoque($pdo, $item_id, $quantidade, $usuario_id, $motivo) {
         die("Erro: quantidade solicitada ($quantidade) maior que o estoque disponível ($estoque).");
     }
 
+    // Atualiza a tabela de itens
     $stmt = $pdo->prepare("UPDATE itens SET quantidade = quantidade - ? WHERE id = ?");
     $stmt->execute([$quantidade, $item_id]);
 
+    // Registra movimentação
     $stmt = $pdo->prepare("
         INSERT INTO movimentacoes_estoque (item_id, tipo, quantidade, usuario_id, motivo)
         VALUES (?, 'baixa', ?, ?, ?)
@@ -65,6 +68,7 @@ if (!$tipo) {
 
 $titulo = '';
 $descricao = '';
+$status_inicial = 'Aberto';
 
 // --------------------
 // CHAMADO DE TONER
@@ -80,7 +84,7 @@ if ($tipo === 'toner') {
 
     // Caso o toner não venha via formulário, busca o vinculado automaticamente
     if (!$item_id) {
-        $stmt = $pdo->prepare("SELECT item_id FROM impressora_tonner WHERE equipamento_id = ?");
+        $stmt = $pdo->prepare("SELECT modeloTonnerId FROM impressora_tonner WHERE impressoraId = ?");
         $stmt->execute([$equipamento_id]);
         $item_id = $stmt->fetchColumn();
 
@@ -90,7 +94,7 @@ if ($tipo === 'toner') {
     }
 
     // Busca nomes
-    $stmt = $pdo->prepare("SELECT descricao FROM equipamentos WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT descricaoEquipamento FROM equipamentos WHERE idEquipamento = ?");
     $stmt->execute([$equipamento_id]);
     $equipamento_nome = $stmt->fetchColumn() ?: 'Desconhecido';
 
@@ -100,6 +104,24 @@ if ($tipo === 'toner') {
 
     $titulo = "Solicitação de Toner: $item_nome";
     $descricao = "Impressora: $equipamento_nome\nToner: $item_nome\nQuantidade: $quantidade";
+
+    // Insere o chamado
+    $stmt = $pdo->prepare("
+        INSERT INTO chamados (tipo, titulo, descricao, imagem_path, autor_id, status)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
+    $stmt->execute([$tipo, $titulo, $descricao, $imagem_path, $usuario_id, $status_inicial]);
+    $chamado_id = $pdo->lastInsertId();
+
+    // Relaciona toner e impressora
+    $stmt = $pdo->prepare("
+        INSERT INTO toner_solicitacao (chamado_id, equipamento_id, item_id, quantidade)
+        VALUES (?, ?, ?, ?)
+    ");
+    $stmt->execute([$chamado_id, $equipamento_id, $item_id, $quantidade]);
+
+    // Faz a baixa de estoque
+    baixarEstoque($pdo, $item_id, $quantidade, $usuario_id, "Solicitação de toner");
 
 }
 // --------------------
@@ -119,6 +141,17 @@ elseif ($tipo === 'material') {
 
     $titulo = "Solicitação de Material: $item_nome";
     $descricao = "Item: $item_nome\nQuantidade: $quantidade";
+
+    // Insere o chamado
+    $stmt = $pdo->prepare("
+        INSERT INTO chamados (tipo, titulo, descricao, imagem_path, autor_id, status)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
+    $stmt->execute([$tipo, $titulo, $descricao, $imagem_path, $usuario_id, $status_inicial]);
+
+    // Faz baixa de estoque
+    baixarEstoque($pdo, $item_id, $quantidade, $usuario_id, "Solicitação de material");
+
 }
 // --------------------
 // CHAMADO GERAL
@@ -130,39 +163,24 @@ elseif ($tipo === 'geral') {
     if (!$titulo || !$descricao) {
         die("Erro: título e descrição são obrigatórios para chamados gerais.");
     }
+
+    // Insere o chamado
+    $stmt = $pdo->prepare("
+        INSERT INTO chamados (tipo, titulo, descricao, imagem_path, autor_id, status)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
+    $stmt->execute([$tipo, $titulo, $descricao, $imagem_path, $usuario_id, $status_inicial]);
+
 }
+// --------------------
+// ERRO CASO TIPO INVÁLIDO
+// --------------------
 else {
     die("Erro: tipo de chamado inválido.");
 }
 
 // --------------------
-// Insere o chamado
-// --------------------
-$stmt = $pdo->prepare("
-    INSERT INTO chamados (tipo, titulo, descricao, imagem_path, autor_id)
-    VALUES (?, ?, ?, ?, ?)
-");
-$stmt->execute([$tipo, $titulo, $descricao, $imagem_path, $usuario_id]);
-$chamado_id = $pdo->lastInsertId();
-
-// --------------------
-// Baixas e registros extras
-// --------------------
-if ($tipo === 'toner') {
-    $stmt = $pdo->prepare("
-        INSERT INTO toner_solicitacao (chamado_id, equipamento_id, item_id, quantidade)
-        VALUES (?, ?, ?, ?)
-    ");
-    $stmt->execute([$chamado_id, $equipamento_id, $item_id, $quantidade]);
-
-    baixarEstoque($pdo, $item_id, $quantidade, $usuario_id, "Solicitação de toner");
-
-} elseif ($tipo === 'material') {
-    baixarEstoque($pdo, $item_id, $quantidade, $usuario_id, "Solicitação de material");
-}
-
-// --------------------
 // Redireciona com sucesso
 // --------------------
-header("Location: index.php?success=1");
+header("Location: listar.php?success=1");
 exit;

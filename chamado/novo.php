@@ -48,7 +48,7 @@ $itens = $pdo->query("SELECT * FROM itens ORDER BY nome")->fetchAll();
                 <select id="impressoraSelect" name="equipamento_id" class="border p-2 rounded w-full">
                     <option value="">Selecione...</option>
                     <?php foreach($equipamentos as $e): ?>
-                        <option value="<?= $e['idEquipamento'] ?>"><?= htmlspecialchars($e['descricaoEquipamento']) ?></option>
+                        <option value="<?= $e['id'] ?>"><?= htmlspecialchars($e['descricao']) ?></option>
                     <?php endforeach; ?>
                 </select>
 
