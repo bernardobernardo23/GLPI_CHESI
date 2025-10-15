@@ -11,7 +11,7 @@ $setor = $_SESSION['usuario_setor'] ?? 'Usuário';
 <aside class="w-64 bg-gray-800 text-white flex flex-col fixed h-full">
     <!-- Cabeçalho -->
     <div class="p-4 text-center border-b border-gray-700">
-        <h1 class="text-lg font-bold">GLPI Simplificado</h1>
+        <h1 class="text-lg font-bold">GLPI_CHESI</h1>
         <p class="text-sm mt-1 text-gray-400">Olá, <?= htmlspecialchars($nome_usuario) ?></p>
         <span class="text-xs text-green-400 font-semibold">
             <?= ($setor == 'TI') ? 'Administrador' : 'Usuário' ?>

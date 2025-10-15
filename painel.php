@@ -53,7 +53,7 @@ $setor = $_SESSION['usuario_setor'] ?? 'Usuário';
             <h2 class="text-xl font-semibold mb-2">🎫 Novo Chamado</h2>
             <p class="text-gray-500 text-sm">Solicite toner, materiais ou suporte técnico.</p>
         </a>
-        <a href="chamado/listar.php" class="bg-white rounded shadow p-5 hover:shadow-lg transition">
+        <a href="chamado/listarChamados.php" class="bg-white rounded shadow p-5 hover:shadow-lg transition">
             <h2 class="text-xl font-semibold mb-2">📋 Meus Chamados</h2>
             <p class="text-gray-500 text-sm">Acompanhe o status das suas solicitações.</p>
         </a>
