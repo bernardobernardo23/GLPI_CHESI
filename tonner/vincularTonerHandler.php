@@ -20,13 +20,9 @@ $stmt = $pdo->prepare("SELECT * FROM impressora_tonner WHERE equipamento_id = ? 
 $stmt->execute([$equipamento_id, $item_id]);
 $existe = $stmt->fetch();
 
-if ($existe) {
-    // Atualiza se já existir
-    $stmt = $pdo->prepare("UPDATE impressora_tonner SET cor = ?, ativo = 1 WHERE equipamento_id = ? AND item_id = ?");
-    $stmt->execute([$cor, $equipamento_id, $item_id]);
-} else {
+if(empty($existe)) {
     // Insere novo vínculo
-    $stmt = $pdo->prepare("INSERT INTO impressora_tonner (equipamento_id, item_id, cor, ativo) VALUES (?, ?, ?, 1)");
+    $stmt = $pdo->prepare("INSERT INTO impressora_tonner (equipamento_id, item_id, ) VALUES (?, ? )");
     $stmt->execute([$equipamento_id, $item_id, $cor]);
 }
 

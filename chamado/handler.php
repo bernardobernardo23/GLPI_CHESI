@@ -78,7 +78,7 @@ if ($tipo === 'toner') {
     $equipamento_id = isset($_POST['equipamento_id']) ? (int)$_POST['equipamento_id'] : 0;
     $item_id = isset($_POST['item_id']) ? (int)$_POST['item_id'] : 0;
     
-    // MUDANÇA: Busca a quantidade do campo 'quantidade_toner'
+    // Busca a quantidade do campo 'quantidade_toner'
     $quantidade = isset($_POST['quantidade_toner']) ? (int)$_POST['quantidade_toner'] : 1; 
 
     // Validação
@@ -89,13 +89,9 @@ if ($tipo === 'toner') {
         die("Erro: toner não selecionado.");
     }
 
-    // Busca cor do toner vinculado
-    $stmt = $pdo->prepare("
-    SELECT cor FROM impressora_tonner
-    WHERE equipamento_id = ? AND item_id = ? AND ativo = 1
-");
-    $stmt->execute([$equipamento_id, $item_id]);
-    $cor_toner = $stmt->fetchColumn() ?: null;
+    // REMOÇÃO: Não precisa buscar a cor, pois a tabela impressora_tonner não tem mais essa coluna.
+    // O valor de cor_toner na tabela toner_solicitacao ficará NULL.
+    $cor_toner = null; 
 
     // Verifica estoque (mantido)
     $stmt = $pdo->prepare("SELECT quantidade FROM itens WHERE id = ?");
@@ -115,9 +111,9 @@ if ($tipo === 'toner') {
     $stmt->execute([$item_id]);
     $item_nome = $stmt->fetchColumn() ?: 'Toner não encontrado';
 
-    // Monta título e descrição (mantido)
+    // Monta título e descrição (cor removida da descrição, pois não está na associação)
     $titulo = "Solicitação de Toner: $item_nome";
-    $descricao = "Impressora: $equipamento_nome\nToner: $item_nome\nCor: $cor_toner\nQuantidade: $quantidade";
+    $descricao = "Impressora: $equipamento_nome\nToner: $item_nome\nQuantidade: $quantidade";
 
     $status_inicial = 'Aberto';
 
@@ -133,6 +129,7 @@ if ($tipo === 'toner') {
         $chamado_id = $pdo->lastInsertId();
 
         // Insere vínculo com toner
+        // O valor de cor_toner é enviado como NULL (ou o valor de $cor_toner, que é null)
         $stmt = $pdo->prepare("
         INSERT INTO toner_solicitacao (chamado_id, equipamento_id, item_id, cor_toner, quantidade, status)
         VALUES (?, ?, ?, ?, ?, 'Pendente')
@@ -142,7 +139,7 @@ if ($tipo === 'toner') {
         $pdo->commit();
 
         // Redireciona com sucesso
-        header("Location: listarChamado.php?success=1");
+        header("Location: listarChamados.php?success=1");
         exit;
     } catch (Exception $e) {
         $pdo->rollBack();
@@ -151,13 +148,13 @@ if ($tipo === 'toner') {
 }
 
 // ==================================================================
-// CHAMADO DE MATERIAL
+// CHAMADO DE MATERIAL (mantido, pois já estava correto com os novos nomes)
 // ==================================================================
 elseif ($tipo === 'material') {
-    // MUDANÇA: Busca o ID do campo 'material_item_id'
+    // Busca o ID do campo 'material_item_id'
     $item_id = isset($_POST['material_item_id']) ? (int)$_POST['material_item_id'] : 0;
     
-    // MUDANÇA: Busca a quantidade do campo 'quantidade_material'
+    // Busca a quantidade do campo 'quantidade_material'
     $quantidade = isset($_POST['quantidade_material']) ? (int)$_POST['quantidade_material'] : 1;
     
     // Valida se o item foi selecionado
@@ -214,7 +211,7 @@ elseif ($tipo === 'material') {
         $pdo->commit();
 
         // Redireciona
-        header("Location: listarChamado.php?success=1");
+        header("Location: listarChamados.php?success=1");
         exit;
     } catch (Exception $e) {
         $pdo->rollBack();
@@ -243,7 +240,7 @@ elseif ($tipo === 'geral') {
 
 
 // --------------------
-// Redireciona com sucesso
+// Redireciona com sucesso (mantido)
 // --------------------
-header("Location: listarChamado.php?success=1");
+header("Location: listarChamados.php?success=1");
 exit;

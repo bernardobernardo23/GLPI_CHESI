@@ -136,7 +136,7 @@ $itens = $pdo->query("SELECT id, nome, tipo, quantidade FROM itens ORDER BY nome
                                 htmlOutput = `
                                     <label class="block font-medium">Toner vinculado</label>
                                     <input type="text" class="border p-2 rounded w-full bg-gray-100"
-                                        value="${t.nome_toner}${t.cor ? ' (' + t.cor + ')' : ''}" readonly>
+                                        value="${t.nome_toner}" readonly>
                                     <input type="hidden" name="item_id" value="${t.item_id}">
                                 `;
 
@@ -147,7 +147,7 @@ $itens = $pdo->query("SELECT id, nome, tipo, quantidade FROM itens ORDER BY nome
                                     <select name="item_id" required class="border p-2 rounded w-full"> 
                                         <option value="">Selecione...</option>
                                         ${data.toners.map(t =>
-                                            `<option value="${t.item_id}">${t.nome_toner}${t.cor ? ' (' + t.cor + ')' : ''}</option>`
+                                            `<option value="${t.item_id}">${t.nome_toner}</option>`
                                         ).join('')}
                                     </select>
                                 `;

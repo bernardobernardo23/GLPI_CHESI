@@ -14,10 +14,9 @@ $mensagem = "";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $equipamento_id = $_POST['equipamento_id'];
     $item_id = $_POST['item_id'];
-    $cor = $_POST['cor'];
 
-    $stmt = $pdo->prepare("INSERT INTO impressora_tonner (equipamento_id, item_id, cor, ativo) VALUES (?, ?, ?, 1)");
-    if ($stmt->execute([$equipamento_id, $item_id, $cor])) {
+    $stmt = $pdo->prepare("INSERT INTO impressora_tonner (equipamento_id, item_id) VALUES (?, ?)");
+    if ($stmt->execute([$equipamento_id, $item_id])) {
         $mensagem = "✅ Toner vinculado com sucesso!";
     } else {
         $mensagem = "❌ Erro ao vincular toner.";
@@ -72,10 +71,7 @@ $toners = $pdo->query("SELECT id, nome FROM itens WHERE tipo = 'toner' ORDER BY 
                 </select>
             </div>
 
-            <div class="mb-4">
-                <label for="cor" class="block text-gray-700 font-medium mb-2">Cor:</label>
-                <input type="text" name="cor" id="cor" placeholder="Ex: Preto, Azul, Amarelo" class="w-full border border-gray-300 rounded px-3 py-2">
-            </div>
+            
 
             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded">
                 Vincular

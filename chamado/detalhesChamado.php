@@ -117,12 +117,12 @@ $dt_fechamento_formatada = $chamado['dt_fechamento'] ? date('d/m/Y H:i', strtoti
                 #<?= $chamado_id ?>: <?= htmlspecialchars($chamado['titulo']) ?>
             </h1>
 
-            <?php if ($usuario_admin): ?>
+            <?php if ($usuario_admin && $chamado['status'] != 'Fechado'): ?>
             <div class="bg-white p-4 rounded-lg shadow-md mb-6 flex flex-wrap gap-4 justify-between items-center border-l-4 border-blue-600">
                 <p class="text-sm font-semibold text-gray-700">Ações :</p>
                 
                 <div class="flex gap-3">
-                    <?php if ($chamado['status'] != 'Fechado'): ?>
+                    
                     <form action="updateStatus.php" method="post" class="flex gap-2 items-center">
                         <input type="hidden" name="id" value="<?= $chamado_id ?>">
                         <select name="status" class="border p-2 rounded-md bg-white text-gray-700 text-sm">
@@ -140,7 +140,7 @@ $dt_fechamento_formatada = $chamado['dt_fechamento'] ? date('d/m/Y H:i', strtoti
                         </svg>
                         Adicionar atualização
                     </a>
-                    <?php endif; ?>
+                    
                 </div>
             </div>
             <?php endif; ?>
