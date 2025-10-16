@@ -206,10 +206,10 @@ $dt_fechamento_formatada = $chamado['dt_fechamento'] ? date('d/m/Y H:i', strtoti
                             
                             <?php if ($a['imagem_path']): ?>
                                 <div class="mt-4">
-                                    <img src="../<?= $a['imagem_path'] ?>"
+                                    <img src="<?= $a['imagem_path'] ?>"
                                         alt="Imagem da atualização"
                                         class="max-h-48 rounded-lg border cursor-pointer hover:opacity-90 shadow-md"
-                                        onclick="openModal('../<?= $a['imagem_path'] ?>')">
+                                        onclick="openModal('<?= $a['imagem_path'] ?>')">
                                 </div>
                             <?php endif; ?>
                         </div>

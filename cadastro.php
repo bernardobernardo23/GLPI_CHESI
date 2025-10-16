@@ -128,9 +128,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <option value="Produção Aerosol" <?= ($setor === 'Produção Aerosol') ? 'selected' : '' ?>>Produção Aerosol</option>
                     <option value="Saneantes" <?= ($setor === 'Saneantes') ? 'selected' : '' ?>>Saneantes</option>
                     <option value="RH" <?= ($setor === 'RH') ? 'selected' : '' ?>>RH</option>
+                    <option value="Segurança" <?= ($setor === 'Segurança') ? 'selected' : '' ?>>Segurança</option>
+                    <option value="Qualidade" <?= ($setor === 'Qualidade') ? 'selected' : '' ?>>Qualidade</option>
                     <option value="Contabilidade" <?= ($setor === 'Contabilidade') ? 'selected' : '' ?>>Contabilidade</option>
                     <option value="Formulação" <?= ($setor === 'Formulação') ? 'selected' : '' ?>>Formulação</option>
                     <option value="Logística" <?= ($setor === 'Logística') ? 'selected' : '' ?>>Logística</option>
+                    <option value="Portaria" <?= ($setor === 'Portaria') ? 'selected' : '' ?>>Portaria</option>
                 </select>
             </div>
 

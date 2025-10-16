@@ -28,8 +28,8 @@ $setor = $_SESSION['usuario_setor'] ?? 'Usuário';
 <main class="flex-1 ml-64 p-10">
     <h1 class="text-2xl font-bold mb-4">Painel Principal</h1>
     <p class="text-gray-700">
-        Bem-vindo ao sistema GLPI Simplificado.  
-        Use o menu lateral para navegar entre as funções.
+        Bem-vindo ao sistema GLPI.  
+        Use o menu para navegar entre as funções.
     </p>
 
     <?php if ($setor == 'TI'): ?>

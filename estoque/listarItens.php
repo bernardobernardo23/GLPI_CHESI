@@ -17,6 +17,7 @@ $itens = $pdo->query("SELECT * FROM itens ORDER BY nome")->fetchAll();
     <div class="max-w-5xl mx-auto bg-white p-6 rounded shadow">
       <h1 class="text-2xl font-bold mb-4">Estoque</h1>
       <a href="cadastrarItem.php" class="bg-blue-600 text-white px-3 py-1 rounded">Novo Item</a>
+      <a href="../tonner/vincularToner.php" class="bg-green-600 text-white px-3 py-1 rounded">Vincular Tonner</a>
       <table class="w-full border mt-3">
         <thead class="bg-gray-200">
           <tr>

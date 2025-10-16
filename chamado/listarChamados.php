@@ -15,17 +15,23 @@ $usuario_admin = ($usuario_setor === 'TI');
 // ------------------------------------
 // 1. FILTRO PADRÃO E RECEBIMENTO DE DADOS
 // ------------------------------------
-// Padrão: Se não houver filtro 'status' na URL, define como 'Aberto'
-$status_filtro = $_GET['status'] ?? 'Aberto'; 
+// MUDANÇA AQUI: Define 'Pendentes' como o agrupamento de 'Aberto' e 'Em andamento' por padrão.
+$status_filtro = $_GET['status'] ?? 'Pendentes'; // Valor padrão: 'Pendentes'
 $nome_filtro = $_GET['nome_autor'] ?? ''; 
 
 $where = "";
 $params = [];
 
 // Filtro por STATUS
-if ($status_filtro !== 'todos') {
+if ($status_filtro === 'todos') {
+    // Não adiciona cláusula WHERE para status
+} elseif ($status_filtro === 'Pendentes') {
+    // Se o padrão é 'Pendentes', filtramos por dois status
+    $where .= " AND c.status IN ('Aberto', 'Em andamento')";
+} else {
+    // Para 'Aberto', 'Em andamento' (se vier específico da URL) ou 'Fechado'
     $where .= " AND c.status = ?";
-    $params[] = $status_filtro;
+    $params[] = $status_filtro; // Adiciona o status específico como parâmetro
 }
 
 // Filtro por NOME DO AUTOR (Apenas para administradores verem todos)
@@ -66,7 +72,7 @@ if ($usuario_admin) {
 
 $chamados = $stmt->fetchAll();
 
-// Função para retornar a classe de cor do status
+// Função para retornar a classe de cor do status (mantida a original)
 function getStatusClass($status) {
     switch ($status) {
         case 'Aberto':
@@ -102,7 +108,8 @@ function getStatusClass($status) {
                 <label for="status-filtro" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select id="status-filtro" name="status" class="border border-gray-300 p-2 rounded-md focus:ring-blue-500 focus:border-blue-500 w-48">
                     <option value="todos" <?= $status_filtro==='todos'?'selected':'' ?>>Todos</option>
-                    <option value="Aberto" <?= $status_filtro==='Aberto'?'selected':'' ?>>Abertos (Pendentes)</option>
+                    <option value="Pendentes" <?= $status_filtro==='Pendentes'?'selected':'' ?>>Pendentes</option>
+                    <option value="Aberto" <?= $status_filtro==='Aberto'?'selected':'' ?>>Aberto</option>
                     <option value="Em andamento" <?= $status_filtro==='Em andamento'?'selected':'' ?>>Em andamento</option>
                     <option value="Fechado" <?= $status_filtro==='Fechado'?'selected':'' ?>>Fechados</option>
                 </select>
@@ -112,15 +119,15 @@ function getStatusClass($status) {
             <div>
                 <label for="nome-autor" class="block text-sm font-medium text-gray-700 mb-1">Autor do Chamado</label>
                 <input type="text" id="nome-autor" name="nome_autor" value="<?= htmlspecialchars($nome_filtro) ?>" 
-                       placeholder="Pesquisar por nome..." class="border border-gray-300 p-2 rounded-md focus:ring-blue-500 focus:border-blue-500 w-64">
+                        placeholder="Pesquisar por nome..." class="border border-gray-300 p-2 rounded-md focus:ring-blue-500 focus:border-blue-500 w-64">
             </div>
             <?php endif; ?>
 
             <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition duration-150">
                 Aplicar Filtros
             </button>
-            <?php if ($status_filtro !== 'Aberto' || $nome_filtro !== ' '): ?>
-            <a href="listar.php" class="text-gray-500 hover:text-gray-700 text-sm py-2">Limpar Filtros</a>
+            <?php if ($status_filtro !== 'Pendentes' || $nome_filtro !== ''): ?>
+            <a href="listarChamados.php" class="text-gray-500 hover:text-gray-700 text-sm py-2">Limpar Filtros</a>
             <?php endif; ?>
         </form>
         
