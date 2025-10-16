@@ -93,7 +93,7 @@ function getTipoBadgeClass($tipo) {
                                 </td>
                                 
                                 <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                    <a href="movimentar.php?id=<?= $i['id'] ?>" class="text-blue-600 hover:text-blue-800 transition">
+                                    <a href="movimentacoes.php?id=<?= $i['id'] ?>" class="text-blue-600 hover:text-blue-800 transition">
                                         Movimentar
                                     </a>
                                 </td>
